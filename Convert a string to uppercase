@@ -1,0 +1,17 @@
+#include <stdio.h>
+#include <ctype.h>
+void convertToUppercase(char *str) {
+    while (*str != '\0') {
+        *str = toupper((unsigned char)*str);
+        str++; 
+    }
+}
+int main() {
+    char str[100];
+    printf("Enter a string: ");
+    fgets(str, sizeof(str), stdin);
+    str[strcspn(str, "\n")] = '\0';
+    convertToUppercase(str);
+    printf("String in uppercase: %s\n", str);
+    return 0;
+}
