@@ -1,0 +1,47 @@
+#include <stdio.h>
+
+struct Address {
+    char street[50];
+    char city[50];
+    char state[50];
+    int zip;
+};
+
+struct Student {
+    char name[50];
+    int age;
+    struct Address address;  // Nested structure
+};
+
+int main() {
+    struct Student student;
+
+    printf("Enter student's name: ");
+    fgets(student.name, sizeof(student.name), stdin);
+
+    printf("Enter student's age: ");
+    scanf("%d", &student.age);
+    getchar();  // Consume the newline left by previous scanf
+
+    printf("Enter street: ");
+    fgets(student.address.street, sizeof(student.address.street), stdin);
+
+    printf("Enter city: ");
+    fgets(student.address.city, sizeof(student.address.city), stdin);
+
+    printf("Enter state: ");
+    fgets(student.address.state, sizeof(student.address.state), stdin);
+
+    printf("Enter zip code: ");
+    scanf("%d", &student.address.zip);
+
+    printf("\nStudent Information:\n");
+    printf("Name: %s", student.name);
+    printf("Age: %d\n", student.age);
+    printf("Address: %s", student.address.street);
+    printf("%s", student.address.city);
+    printf("%s", student.address.state);
+    printf("Zip Code: %d\n", student.address.zip);
+
+    return 0;
+}
