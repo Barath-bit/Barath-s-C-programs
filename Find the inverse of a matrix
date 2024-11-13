@@ -1,0 +1,123 @@
+#include <stdio.h>
+
+#define MAX 10
+
+// Function to calculate the determinant of a matrix
+int determinant(int matrix[MAX][MAX], int n) {
+    int det = 0;
+    if (n == 1) {
+        return matrix[0][0];
+    }
+
+    int temp[MAX][MAX];  // Temporary matrix to store minors
+
+    for (int p = 0; p < n; p++) {
+        int h = 0, k = 0;
+
+        // Get the minor of the matrix
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (j == p) continue;
+                temp[h][k++] = matrix[i][j];
+                if (k == n - 1) {
+                    k = 0;
+                    h++;
+                }
+            }
+        }
+
+        // Recursively calculate the determinant
+        det += matrix[0][p] * ((p % 2 == 0 ? 1 : -1) * determinant(temp, n - 1));
+    }
+
+    return det;
+}
+
+// Function to calculate the cofactor matrix
+void cofactor(int matrix[MAX][MAX], int temp[MAX][MAX], int row, int col, int n) {
+    int i = 0, j = 0;
+    for (int r = 0; r < n; r++) {
+        for (int c = 0; c < n; c++) {
+            if (r != row && c != col) {
+                temp[i][j++] = matrix[r][c];
+                if (j == n - 1) {
+                    j = 0;
+                    i++;
+                }
+            }
+        }
+    }
+}
+
+// Function to find the adjoint of the matrix
+void adjoint(int matrix[MAX][MAX], int adj[MAX][MAX], int n) {
+    if (n == 1) {
+        adj[0][0] = 1;
+        return;
+    }
+
+    int temp[MAX][MAX];
+    int sign = 1;
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cofactor(matrix, temp, i, j, n);
+            sign = ((i + j) % 2 == 0) ? 1 : -1;
+            adj[j][i] = sign * determinant(temp, n - 1);  // Transpose while calculating adjoint
+        }
+    }
+}
+
+// Function to find the inverse of a matrix
+int inverse(int matrix[MAX][MAX], float inverse[MAX][MAX], int n) {
+    int det = determinant(matrix, n);
+    if (det == 0) {
+        printf("Inverse does not exist (determinant is 0).\n");
+        return 0;  // Inverse does not exist
+    }
+
+    int adj[MAX][MAX];
+    adjoint(matrix, adj, n);
+
+    // Multiply adjoint matrix by 1/det to get the inverse
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            inverse[i][j] = (float)adj[i][j] / det;
+        }
+    }
+
+    return 1;  // Inverse found
+}
+
+// Function to print the matrix
+void printMatrix(float matrix[MAX][MAX], int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            printf("%0.2f ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+int main() {
+    int n;
+    printf("Enter the size of the matrix (n x n): ");
+    scanf("%d", &n);
+
+    int matrix[MAX][MAX];
+    float inv[MAX][MAX];
+
+    printf("Enter the elements of the matrix:\n");
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &matrix[i][j]);
+        }
+    }
+
+    if (inverse(matrix, inv, n)) {
+        printf("Inverse of the matrix is:\n");
+        printMatrix(inv, n);
+    }
+
+    return 0;
+}
