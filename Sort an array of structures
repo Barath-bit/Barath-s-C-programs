@@ -1,0 +1,41 @@
+#include <stdio.h>
+#include <string.h>
+
+struct Student {
+    char name[50];
+    int score;
+};
+
+int compare(const void *a, const void *b) {
+    struct Student *studentA = (struct Student *)a;
+    struct Student *studentB = (struct Student *)b;
+    return studentA->score - studentB->score;
+}
+
+int main() {
+    int n;
+
+    printf("Enter the number of students: ");
+    scanf("%d", &n);
+
+    struct Student students[n];
+
+    for (int i = 0; i < n; i++) {
+        printf("\nEnter name of student %d: ", i + 1);
+        getchar();
+        fgets(students[i].name, sizeof(students[i].name), stdin);
+        students[i].name[strcspn(students[i].name, "\n")] = 0;
+
+        printf("Enter score of student %d: ", i + 1);
+        scanf("%d", &students[i].score);
+    }
+
+    qsort(students, n, sizeof(struct Student), compare);
+
+    printf("\nSorted list of students based on their scores:\n");
+    for (int i = 0; i < n; i++) {
+        printf("%s - %d\n", students[i].name, students[i].score);
+    }
+
+    return 0;
+}
