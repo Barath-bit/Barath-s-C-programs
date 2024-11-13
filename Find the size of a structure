@@ -1,0 +1,15 @@
+#include <stdio.h>
+
+struct Person {
+    char name[50];
+    int age;
+    float height;
+};
+
+int main() {
+    struct Person person;
+    
+    printf("Size of the structure: %zu bytes\n", sizeof(person));
+    
+    return 0;
+}
