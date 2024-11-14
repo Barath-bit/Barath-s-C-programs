@@ -1,0 +1,151 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_SHOWS 3      // Maximum number of shows
+#define MAX_SEATS 10     // Maximum number of seats per show
+
+// Structure to represent a Show
+struct Show {
+    char name[50];
+    int availableSeats[MAX_SEATS];  // 1 if the seat is booked, 0 if available
+};
+
+// Function to initialize the shows
+void initializeShows(struct Show shows[MAX_SHOWS]) {
+    for (int i = 0; i < MAX_SHOWS; i++) {
+        printf("Enter the name of Show %d: ", i + 1);
+        getchar(); // Clear the newline character left by previous input
+        fgets(shows[i].name, sizeof(shows[i].name), stdin);
+        shows[i].name[strcspn(shows[i].name, "\n")] = '\0';  // Remove the newline character
+
+        // Initialize all seats as available (0)
+        for (int j = 0; j < MAX_SEATS; j++) {
+            shows[i].availableSeats[j] = 0;
+        }
+    }
+}
+
+// Function to display the available seats for a show
+void displayAvailableSeats(struct Show shows[MAX_SHOWS], int showIndex) {
+    printf("\nAvailable seats for the show '%s':\n", shows[showIndex].name);
+    for (int i = 0; i < MAX_SEATS; i++) {
+        printf("Seat %d: %s\n", i + 1, shows[showIndex].availableSeats[i] == 0 ? "Available" : "Booked");
+    }
+}
+
+// Function to reserve a seat for a show
+void reserveSeat(struct Show shows[MAX_SHOWS], int showIndex) {
+    int seatNumber;
+    printf("Enter seat number to reserve (1-%d): ", MAX_SEATS);
+    scanf("%d", &seatNumber);
+
+    // Validate seat number and check availability
+    if (seatNumber < 1 || seatNumber > MAX_SEATS) {
+        printf("Invalid seat number! Please enter a number between 1 and %d.\n", MAX_SEATS);
+    } else if (shows[showIndex].availableSeats[seatNumber - 1] == 1) {
+        printf("Seat %d is already booked! Please select another seat.\n", seatNumber);
+    } else {
+        // Reserve the seat
+        shows[showIndex].availableSeats[seatNumber - 1] = 1;
+        printf("Seat %d has been successfully reserved for the show '%s'.\n", seatNumber, shows[showIndex].name);
+    }
+}
+
+// Function to cancel a reservation for a show
+void cancelReservation(struct Show shows[MAX_SHOWS], int showIndex) {
+    int seatNumber;
+    printf("Enter seat number to cancel reservation (1-%d): ", MAX_SEATS);
+    scanf("%d", &seatNumber);
+
+    // Validate seat number and check if it's booked
+    if (seatNumber < 1 || seatNumber > MAX_SEATS) {
+        printf("Invalid seat number! Please enter a number between 1 and %d.\n", MAX_SEATS);
+    } else if (shows[showIndex].availableSeats[seatNumber - 1] == 0) {
+        printf("Seat %d is not booked! No reservation to cancel.\n", seatNumber);
+    } else {
+        // Cancel the reservation
+        shows[showIndex].availableSeats[seatNumber - 1] = 0;
+        printf("Reservation for seat %d has been successfully canceled for the show '%s'.\n", seatNumber, shows[showIndex].name);
+    }
+}
+
+// Main menu function
+void menu(struct Show shows[MAX_SHOWS]) {
+    int choice, showIndex;
+
+    while (1) {
+        printf("\nMovie Ticket Booking System\n");
+        printf("1. Display available seats\n");
+        printf("2. Reserve a seat\n");
+        printf("3. Cancel a reservation\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                // Show list of available shows
+                printf("Select a show to view available seats:\n");
+                for (int i = 0; i < MAX_SHOWS; i++) {
+                    printf("%d. %s\n", i + 1, shows[i].name);
+                }
+                printf("Enter your choice (1-%d): ", MAX_SHOWS);
+                scanf("%d", &showIndex);
+                if (showIndex < 1 || showIndex > MAX_SHOWS) {
+                    printf("Invalid choice! Please select a valid show.\n");
+                } else {
+                    displayAvailableSeats(shows, showIndex - 1);
+                }
+                break;
+
+            case 2:
+                // Reserve a seat
+                printf("Select a show to reserve a seat:\n");
+                for (int i = 0; i < MAX_SHOWS; i++) {
+                    printf("%d. %s\n", i + 1, shows[i].name);
+                }
+                printf("Enter your choice (1-%d): ", MAX_SHOWS);
+                scanf("%d", &showIndex);
+                if (showIndex < 1 || showIndex > MAX_SHOWS) {
+                    printf("Invalid choice! Please select a valid show.\n");
+                } else {
+                    reserveSeat(shows, showIndex - 1);
+                }
+                break;
+
+            case 3:
+                // Cancel a reservation
+                printf("Select a show to cancel a reservation:\n");
+                for (int i = 0; i < MAX_SHOWS; i++) {
+                    printf("%d. %s\n", i + 1, shows[i].name);
+                }
+                printf("Enter your choice (1-%d): ", MAX_SHOWS);
+                scanf("%d", &showIndex);
+                if (showIndex < 1 || showIndex > MAX_SHOWS) {
+                    printf("Invalid choice! Please select a valid show.\n");
+                } else {
+                    cancelReservation(shows, showIndex - 1);
+                }
+                break;
+
+            case 4:
+                printf("Exiting the program.\n");
+                exit(0);
+
+            default:
+                printf("Invalid choice! Please select a valid option.\n");
+        }
+    }
+}
+
+int main() {
+    struct Show shows[MAX_SHOWS];
+
+    // Initialize shows
+    initializeShows(shows);
+
+    // Call menu function
+    menu(shows);
+
+    return 0;
+}
