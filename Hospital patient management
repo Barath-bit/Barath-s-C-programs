@@ -1,0 +1,114 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+// Structure to store patient information
+struct Patient {
+    char name[50];
+    int age;
+    char gender;
+    struct tm admissionDate;
+    struct tm dischargeDate;
+    float roomChargePerDay;
+    float serviceCharges;
+    float totalBill;
+};
+
+// Function to calculate the duration between two dates (in days)
+int calculateDuration(struct tm admissionDate, struct tm dischargeDate) {
+    time_t admission = mktime(&admissionDate);
+    time_t discharge = mktime(&dischargeDate);
+    double seconds = difftime(discharge, admission);
+    int days = seconds / (60 * 60 * 24);
+    return days;
+}
+
+// Function to add a patient record
+void addPatient(struct Patient *patient) {
+    printf("Enter patient name: ");
+    getchar(); // Clear buffer
+    fgets(patient->name, 50, stdin);
+    patient->name[strcspn(patient->name, "\n")] = '\0'; // Remove newline character
+
+    printf("Enter patient age: ");
+    scanf("%d", &patient->age);
+
+    printf("Enter patient gender (M/F): ");
+    getchar(); // Clear buffer
+    scanf("%c", &patient->gender);
+
+    printf("Enter admission date (DD MM YYYY): ");
+    scanf("%d %d %d", &patient->admissionDate.tm_mday, &patient->admissionDate.tm_mon, &patient->admissionDate.tm_year);
+    patient->admissionDate.tm_mon -= 1; // Adjust month to 0-based index
+    patient->admissionDate.tm_year -= 1900; // Adjust year to 1900-based index
+
+    printf("Enter room charge per day: ");
+    scanf("%f", &patient->roomChargePerDay);
+
+    printf("Enter service charges: ");
+    scanf("%f", &patient->serviceCharges);
+}
+
+// Function to discharge a patient and calculate the bill
+void dischargePatient(struct Patient *patient) {
+    printf("Enter discharge date (DD MM YYYY): ");
+    scanf("%d %d %d", &patient->dischargeDate.tm_mday, &patient->dischargeDate.tm_mon, &patient->dischargeDate.tm_year);
+    patient->dischargeDate.tm_mon -= 1; // Adjust month to 0-based index
+    patient->dischargeDate.tm_year -= 1900; // Adjust year to 1900-based index
+
+    // Calculate duration of stay
+    int duration = calculateDuration(patient->admissionDate, patient->dischargeDate);
+    printf("Patient stayed for %d days.\n", duration);
+
+    // Calculate total bill
+    float roomCharges = duration * patient->roomChargePerDay;
+    patient->totalBill = roomCharges + patient->serviceCharges;
+
+    printf("Total bill for patient %s: %.2f\n", patient->name, patient->totalBill);
+}
+
+// Function to display patient details
+void displayPatientDetails(struct Patient *patient) {
+    printf("Patient Name: %s\n", patient->name);
+    printf("Age: %d\n", patient->age);
+    printf("Gender: %c\n", patient->gender);
+    printf("Admission Date: %d/%d/%d\n", patient->admissionDate.tm_mday, patient->admissionDate.tm_mon + 1, patient->admissionDate.tm_year + 1900);
+    printf("Room Charge per Day: %.2f\n", patient->roomChargePerDay);
+    printf("Service Charges: %.2f\n", patient->serviceCharges);
+    printf("Total Bill: %.2f\n", patient->totalBill);
+}
+
+// Main function
+int main() {
+    struct Patient patient;
+    int choice;
+
+    while (1) {
+        printf("\nHospital Patient Management System\n");
+        printf("1. Add Patient\n");
+        printf("2. Discharge Patient and Generate Bill\n");
+        printf("3. View Patient Details\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addPatient(&patient);
+                break;
+            case 2:
+                dischargePatient(&patient);
+                break;
+            case 3:
+                displayPatientDetails(&patient);
+                break;
+            case 4:
+                printf("Exiting the program.\n");
+                exit(0);
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+    return 0;
+}
