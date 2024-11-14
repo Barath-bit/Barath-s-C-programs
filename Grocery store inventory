@@ -1,0 +1,133 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_PRODUCTS 10
+#define NAME_LENGTH 50
+
+// Structure to represent a product
+struct Product {
+    char name[NAME_LENGTH];
+    int quantity;
+    int reorderPoint;
+    float price;
+};
+
+// Function to add a product to the inventory
+void addProduct(struct Product inventory[], int *count) {
+    if (*count >= MAX_PRODUCTS) {
+        printf("Inventory is full. Cannot add more products.\n");
+        return;
+    }
+
+    struct Product newProduct;
+    printf("Enter product name: ");
+    getchar(); // Clear buffer
+    fgets(newProduct.name, NAME_LENGTH, stdin);
+    newProduct.name[strcspn(newProduct.name, "\n")] = '\0'; // Remove newline character
+
+    printf("Enter quantity: ");
+    scanf("%d", &newProduct.quantity);
+    
+    printf("Enter reorder point: ");
+    scanf("%d", &newProduct.reorderPoint);
+
+    printf("Enter price: ");
+    scanf("%f", &newProduct.price);
+
+    inventory[*count] = newProduct;
+    (*count)++;
+    printf("Product added successfully.\n");
+}
+
+// Function to remove a product from the inventory
+void removeProduct(struct Product inventory[], int *count) {
+    char productName[NAME_LENGTH];
+    printf("Enter the name of the product to remove: ");
+    getchar(); // Clear buffer
+    fgets(productName, NAME_LENGTH, stdin);
+    productName[strcspn(productName, "\n")] = '\0'; // Remove newline character
+
+    for (int i = 0; i < *count; i++) {
+        if (strcmp(inventory[i].name, productName) == 0) {
+            // Shift products to fill the removed one
+            for (int j = i; j < *count - 1; j++) {
+                inventory[j] = inventory[j + 1];
+            }
+            (*count)--;
+            printf("Product removed successfully.\n");
+            return;
+        }
+    }
+    printf("Product not found.\n");
+}
+
+// Function to search for a product by name
+void searchProduct(struct Product inventory[], int count) {
+    char productName[NAME_LENGTH];
+    printf("Enter product name to search: ");
+    getchar(); // Clear buffer
+    fgets(productName, NAME_LENGTH, stdin);
+    productName[strcspn(productName, "\n")] = '\0'; // Remove newline character
+
+    for (int i = 0; i < count; i++) {
+        if (strcmp(inventory[i].name, productName) == 0) {
+            printf("Product found: %s\n", inventory[i].name);
+            printf("Quantity: %d\n", inventory[i].quantity);
+            printf("Reorder point: %d\n", inventory[i].reorderPoint);
+            printf("Price: %.2f\n", inventory[i].price);
+            return;
+        }
+    }
+    printf("Product not found.\n");
+}
+
+// Function to track stock levels and reorder
+void trackStock(struct Product inventory[], int count) {
+    printf("Product stock levels and reorder status:\n");
+    for (int i = 0; i < count; i++) {
+        printf("Product: %s, Stock: %d, Reorder Point: %d\n", inventory[i].name, inventory[i].quantity, inventory[i].reorderPoint);
+        if (inventory[i].quantity <= inventory[i].reorderPoint) {
+            printf("Warning: Reorder point reached or stock is low for %s. Consider restocking!\n", inventory[i].name);
+        }
+    }
+}
+
+// Main function
+int main() {
+    struct Product inventory[MAX_PRODUCTS];
+    int productCount = 0;
+    int choice;
+
+    while (1) {
+        printf("\nGrocery Store Inventory System\n");
+        printf("1. Add Product\n");
+        printf("2. Remove Product\n");
+        printf("3. Search Product\n");
+        printf("4. Track Stock Levels\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addProduct(inventory, &productCount);
+                break;
+            case 2:
+                removeProduct(inventory, &productCount);
+                break;
+            case 3:
+                searchProduct(inventory, productCount);
+                break;
+            case 4:
+                trackStock(inventory, productCount);
+                break;
+            case 5:
+                printf("Exiting the program.\n");
+                exit(0);
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+    return 0;
+}
