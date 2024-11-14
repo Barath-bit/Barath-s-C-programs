@@ -1,0 +1,105 @@
+#include <stdio.h>
+
+char board[3][3];  // 3x3 Tic-Tac-Toe board
+char currentPlayer = 'X';  // Player X starts the game
+
+// Function to initialize the board with empty spaces
+void initializeBoard() {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            board[i][j] = ' ';
+        }
+    }
+}
+
+// Function to display the board
+void displayBoard() {
+    printf("\n");
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            printf(" %c ", board[i][j]);
+            if (j < 2) printf("|");
+        }
+        printf("\n");
+        if (i < 2) printf("---|---|---\n");
+    }
+    printf("\n");
+}
+
+// Function to check if the current player has won
+int checkWin() {
+    // Check rows, columns, and diagonals
+    for (int i = 0; i < 3; i++) {
+        if (board[i][0] == currentPlayer && board[i][1] == currentPlayer && board[i][2] == currentPlayer) return 1;  // Row
+        if (board[0][i] == currentPlayer && board[1][i] == currentPlayer && board[2][i] == currentPlayer) return 1;  // Column
+    }
+    if (board[0][0] == currentPlayer && board[1][1] == currentPlayer && board[2][2] == currentPlayer) return 1;  // Diagonal
+    if (board[0][2] == currentPlayer && board[1][1] == currentPlayer && board[2][0] == currentPlayer) return 1;  // Anti-diagonal
+    return 0;
+}
+
+// Function to check if the board is full (draw)
+int checkDraw() {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (board[i][j] == ' ') return 0;  // Empty space found, game is still ongoing
+        }
+    }
+    return 1;  // No empty spaces, it's a draw
+}
+
+// Function to make a move
+void makeMove(int row, int col) {
+    if (board[row][col] == ' ') {
+        board[row][col] = currentPlayer;
+    } else {
+        printf("Invalid move, try again!\n");
+    }
+}
+
+// Function to switch players
+void switchPlayer() {
+    if (currentPlayer == 'X') {
+        currentPlayer = 'O';
+    } else {
+        currentPlayer = 'X';
+    }
+}
+
+int main() {
+    int row, col;
+    int gameOver = 0;
+
+    // Initialize the board
+    initializeBoard();
+
+    // Game loop
+    while (!gameOver) {
+        displayBoard();
+        printf("Player %c, enter your move (row and column [0-2]): ", currentPlayer);
+        scanf("%d %d", &row, &col);
+
+        if (row < 0 || row > 2 || col < 0 || col > 2) {
+            printf("Invalid input! Row and column must be between 0 and 2.\n");
+            continue;
+        }
+
+        makeMove(row, col);
+
+        // Check for a win or draw after the move
+        if (checkWin()) {
+            displayBoard();
+            printf("Player %c wins!\n", currentPlayer);
+            gameOver = 1;
+        } else if (checkDraw()) {
+            displayBoard();
+            printf("It's a draw!\n");
+            gameOver = 1;
+        } else {
+            // Switch to the other player if no win or draw
+            switchPlayer();
+        }
+    }
+
+    return 0;
+}
