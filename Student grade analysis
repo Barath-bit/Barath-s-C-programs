@@ -1,0 +1,53 @@
+#include <stdio.h>
+
+#define PASS_MARK 50  // Define the passing grade threshold
+
+int main() {
+    int n, passingCount = 0, failingCount = 0;
+    float sum = 0.0, average;
+    int highest, lowest;
+
+    // Ask for the number of students
+    printf("Enter the number of students: ");
+    scanf("%d", &n);
+
+    int grades[n];  // Declare an array to store the grades
+
+    // Input grades
+    printf("Enter the grades of the students:\n");
+    for (int i = 0; i < n; i++) {
+        printf("Grade of student %d: ", i + 1);
+        scanf("%d", &grades[i]);
+
+        sum += grades[i];  // Calculate the sum of grades
+
+        // Update highest and lowest grades
+        if (i == 0) {
+            highest = grades[i];
+            lowest = grades[i];
+        } else {
+            if (grades[i] > highest) highest = grades[i];
+            if (grades[i] < lowest) lowest = grades[i];
+        }
+
+        // Count passing and failing students
+        if (grades[i] >= PASS_MARK) {
+            passingCount++;
+        } else {
+            failingCount++;
+        }
+    }
+
+    // Calculate the average grade
+    average = sum / n;
+
+    // Display the results
+    printf("\nAnalysis Results:\n");
+    printf("Average grade: %.2f\n", average);
+    printf("Highest grade: %d\n", highest);
+    printf("Lowest grade: %d\n", lowest);
+    printf("Number of students passing: %d\n", passingCount);
+    printf("Number of students failing: %d\n", failingCount);
+
+    return 0;
+}
