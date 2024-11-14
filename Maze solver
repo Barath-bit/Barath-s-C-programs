@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define N 5  // Maze size: 5x5 grid (you can change the size)
+
+// Defining the maze with 1 as a wall and 0 as an open path
+int maze[N][N] = {
+    {1, 0, 1, 1, 1},
+    {1, 0, 1, 0, 1},
+    {1, 0, 1, 0, 0},
+    {1, 1, 0, 0, 1},
+    {1, 1, 1, 0, 0}
+};
+
+// Direction arrays to move in 4 directions (up, down, left, right)
+int rowDir[] = {-1, 1, 0, 0};
+int colDir[] = {0, 0, -1, 1};
+
+// Stack structure to store the path
+typedef struct {
+    int row, col;
+} Point;
+
+// Function to check if a position is valid (inside the maze and not a wall)
+int isValid(int row, int col, int visited[N][N]) {
+    return (row >= 0 && row < N && col >= 0 && col < N && maze[row][col] == 0 && !visited[row][col]);
+}
+
+// Function to solve the maze using DFS
+int solveMazeDFS(int startRow, int startCol, int endRow, int endCol, int visited[N][N], Point path[], int* pathLength) {
+    // If the current position is the destination
+    if (startRow == endRow && startCol == endCol) {
+        path[*pathLength].row = startRow;
+        path[*pathLength].col = startCol;
+        (*pathLength)++;
+        return 1;
+    }
+
+    // Mark the current position as visited
+    visited[startRow][startCol] = 1;
+
+    // Try moving in 4 possible directions
+    for (int i = 0; i < 4; i++) {
+        int newRow = startRow + rowDir[i];
+        int newCol = startCol + colDir[i];
+
+        // If the move is valid, recursively call DFS from the new position
+        if (isValid(newRow, newCol, visited)) {
+            path[*pathLength].row = startRow;
+            path[*pathLength].col = startCol;
+            (*pathLength)++;
+
+            if (solveMazeDFS(newRow, newCol, endRow, endCol, visited, path, pathLength)) {
+                return 1;
+            }
+
+            // Backtrack if the move doesn't lead to the solution
+            (*pathLength)--;
+        }
+    }
+
+    // No valid moves found, return false
+    return 0;
+}
+
+// Function to print the solution path
+void printPath(Point path[], int pathLength) {
+    printf("Path to the destination: \n");
+    for (int i = 0; i < pathLength; i++) {
+        printf("(%d, %d) ", path[i].row, path[i].col);
+    }
+    printf("\n");
+}
+
+int main() {
+    int visited[N][N] = {0};  // Visited array to keep track of visited cells
+    Point path[N * N];        // Array to store the path taken
+    int pathLength = 0;       // To store the length of the path
+
+    int startRow = 0, startCol = 1;  // Starting point (0, 1)
+    int endRow = 4, endCol = 4;      // Ending point (4, 4)
+
+    // Solve the maze
+    if (solveMazeDFS(startRow, startCol, endRow, endCol, visited, path, &pathLength)) {
+        // Print the solution path
+        printPath(path, pathLength);
+    } else {
+        printf("No path found.\n");
+    }
+
+    return 0;
+}
