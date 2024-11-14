@@ -1,0 +1,47 @@
+#include <stdio.h>
+
+// Function to check loan eligibility
+int checkEligibility(float income, int creditScore, float debt) {
+    // Eligibility criteria
+    // Income must be above a certain threshold
+    if (income < 30000) {
+        return 0; // Not eligible due to low income
+    }
+
+    // Credit score must be above 650
+    if (creditScore < 650) {
+        return 0; // Not eligible due to low credit score
+    }
+
+    // Debt-to-income ratio must be below 40%
+    if ((debt / income) > 0.4) {
+        return 0; // Not eligible due to high debt-to-income ratio
+    }
+
+    return 1; // Eligible for loan
+}
+
+int main() {
+    float income;
+    int creditScore;
+    float debt;
+
+    // Input user details
+    printf("Enter your monthly income: ");
+    scanf("%f", &income);
+
+    printf("Enter your credit score: ");
+    scanf("%d", &creditScore);
+
+    printf("Enter your total existing debt: ");
+    scanf("%f", &debt);
+
+    // Check eligibility
+    if (checkEligibility(income, creditScore, debt)) {
+        printf("\nCongratulations! You are eligible for the loan.\n");
+    } else {
+        printf("\nSorry, you are not eligible for the loan.\n");
+    }
+
+    return 0;
+}
