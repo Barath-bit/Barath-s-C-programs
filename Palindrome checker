@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+// Function to check if a string is a palindrome
+int isPalindrome(char str[]) {
+    int start = 0;
+    int end = strlen(str) - 1;
+
+    while (start < end) {
+        if (tolower(str[start]) != tolower(str[end])) {
+            return 0;  // Not a palindrome
+        }
+        start++;
+        end--;
+    }
+
+    return 1;  // It's a palindrome
+}
+
+// Function to check if a number is a palindrome
+int isNumberPalindrome(int num) {
+    int reversed = 0, original = num, remainder;
+
+    // Reversing the number
+    while (num != 0) {
+        remainder = num % 10;
+        reversed = reversed * 10 + remainder;
+        num /= 10;
+    }
+
+    return (original == reversed);  // If the number equals its reverse
+}
+
+// Function to find the longest palindrome in a list of strings
+void findLongestPalindrome(char* arr[], int n) {
+    int maxLength = 0;
+    char* longestPalindrome = NULL;
+
+    for (int i = 0; i < n; i++) {
+        if (isPalindrome(arr[i])) {
+            int len = strlen(arr[i]);
+            if (len > maxLength) {
+                maxLength = len;
+                longestPalindrome = arr[i];
+            }
+        }
+    }
+
+    if (longestPalindrome) {
+        printf("\nLongest Palindrome: %s\n", longestPalindrome);
+    } else {
+        printf("\nNo palindromes found in the list.\n");
+    }
+}
+
+int main() {
+    // Test for palindrome string
+    char str[100];
+    printf("Enter a string to check if it's a palindrome: ");
+    fgets(str, 100, stdin);
+    str[strcspn(str, "\n")] = '\0';  // Remove the newline character
+    if (isPalindrome(str)) {
+        printf("\"%s\" is a palindrome.\n", str);
+    } else {
+        printf("\"%s\" is not a palindrome.\n", str);
+    }
+
+    // Test for palindrome number
+    int num;
+    printf("Enter a number to check if it's a palindrome: ");
+    scanf("%d", &num);
+    if (isNumberPalindrome(num)) {
+        printf("%d is a palindrome.\n", num);
+    } else {
+        printf("%d is not a palindrome.\n", num);
+    }
+
+    // List of strings to find the longest palindrome
+    char* strList[] = {"level", "madam", "hello", "racecar", "world", "noon"};
+    int listSize = sizeof(strList) / sizeof(strList[0]);
+
+    // Find the longest palindrome in the list
+    findLongestPalindrome(strList, listSize);
+
+    return 0;
+}
