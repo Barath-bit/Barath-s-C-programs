@@ -1,0 +1,143 @@
+#include <stdio.h>
+
+#define MAX 10  // Maximum matrix size
+
+// Function to input a matrix
+void inputMatrix(int matrix[MAX][MAX], int rows, int cols) {
+    printf("Enter the elements of the matrix (%d x %d):\n", rows, cols);
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            printf("Element [%d][%d]: ", i + 1, j + 1);
+            scanf("%d", &matrix[i][j]);
+        }
+    }
+}
+
+// Function to display a matrix
+void displayMatrix(int matrix[MAX][MAX], int rows, int cols) {
+    printf("Matrix:\n");
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            printf("%d ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+// Function to add two matrices
+void addMatrices(int matrix1[MAX][MAX], int matrix2[MAX][MAX], int result[MAX][MAX], int rows, int cols) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            result[i][j] = matrix1[i][j] + matrix2[i][j];
+        }
+    }
+}
+
+// Function to subtract two matrices
+void subtractMatrices(int matrix1[MAX][MAX], int matrix2[MAX][MAX], int result[MAX][MAX], int rows, int cols) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            result[i][j] = matrix1[i][j] - matrix2[i][j];
+        }
+    }
+}
+
+// Function to multiply two matrices
+void multiplyMatrices(int matrix1[MAX][MAX], int matrix2[MAX][MAX], int result[MAX][MAX], int rows1, int cols1, int rows2, int cols2) {
+    if (cols1 != rows2) {
+        printf("Matrix multiplication not possible: Number of columns of first matrix must be equal to number of rows of second matrix.\n");
+        return;
+    }
+
+    for (int i = 0; i < rows1; i++) {
+        for (int j = 0; j < cols2; j++) {
+            result[i][j] = 0;
+            for (int k = 0; k < cols1; k++) {
+                result[i][j] += matrix1[i][k] * matrix2[k][j];
+            }
+        }
+    }
+}
+
+// Function to transpose a matrix
+void transposeMatrix(int matrix[MAX][MAX], int result[MAX][MAX], int rows, int cols) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            result[j][i] = matrix[i][j];
+        }
+    }
+}
+
+int main() {
+    int choice;
+    int rows1, cols1, rows2, cols2;
+    int matrix1[MAX][MAX], matrix2[MAX][MAX], result[MAX][MAX];
+
+    printf("Matrix Operations Program\n");
+    printf("Enter number of rows and columns for matrix 1: ");
+    scanf("%d %d", &rows1, &cols1);
+
+    inputMatrix(matrix1, rows1, cols1);
+
+    printf("Enter number of rows and columns for matrix 2: ");
+    scanf("%d %d", &rows2, &cols2);
+
+    inputMatrix(matrix2, rows2, cols2);
+
+    while (1) {
+        printf("\nChoose an operation:\n");
+        printf("1. Matrix Addition\n");
+        printf("2. Matrix Subtraction\n");
+        printf("3. Matrix Multiplication\n");
+        printf("4. Matrix Transpose\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                if (rows1 == rows2 && cols1 == cols2) {
+                    addMatrices(matrix1, matrix2, result, rows1, cols1);
+                    printf("Result of Matrix Addition:\n");
+                    displayMatrix(result, rows1, cols1);
+                } else {
+                    printf("Matrix addition not possible: Matrices must have the same dimensions.\n");
+                }
+                break;
+            case 2:
+                if (rows1 == rows2 && cols1 == cols2) {
+                    subtractMatrices(matrix1, matrix2, result, rows1, cols1);
+                    printf("Result of Matrix Subtraction:\n");
+                    displayMatrix(result, rows1, cols1);
+                } else {
+                    printf("Matrix subtraction not possible: Matrices must have the same dimensions.\n");
+                }
+                break;
+            case 3:
+                if (cols1 == rows2) {
+                    multiplyMatrices(matrix1, matrix2, result, rows1, cols1, rows2, cols2);
+                    printf("Result of Matrix Multiplication:\n");
+                    displayMatrix(result, rows1, cols2);
+                } else {
+                    printf("Matrix multiplication not possible: Number of columns of first matrix must be equal to number of rows of second matrix.\n");
+                }
+                break;
+            case 4:
+                printf("Transpose of Matrix 1:\n");
+                transposeMatrix(matrix1, result, rows1, cols1);
+                displayMatrix(result, cols1, rows1);
+
+                printf("Transpose of Matrix 2:\n");
+                transposeMatrix(matrix2, result, rows2, cols2);
+                displayMatrix(result, cols2, rows2);
+                break;
+            case 5:
+                printf("Exiting program...\n");
+                return 0;
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
+    }
+
+    return 0;
+}
