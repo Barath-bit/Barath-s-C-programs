@@ -1,0 +1,149 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_ITEMS 10 // Maximum number of items in the cart
+#define TAX_RATE 0.1  // 10% tax rate
+#define DISCOUNT_RATE 0.05 // 5% discount for total price above $100
+
+// Structure to store product details
+typedef struct {
+    char name[50];
+    float price;
+    int quantity;
+} Item;
+
+// Function to display all items in the cart
+void viewCart(Item cart[], int itemCount) {
+    if (itemCount == 0) {
+        printf("Your cart is empty.\n");
+        return;
+    }
+
+    printf("\nItems in your cart:\n");
+    for (int i = 0; i < itemCount; i++) {
+        printf("Item: %s, Price: $%.2f, Quantity: %d, Total: $%.2f\n",
+               cart[i].name, cart[i].price, cart[i].quantity,
+               cart[i].price * cart[i].quantity);
+    }
+}
+
+// Function to add an item to the cart
+void addItem(Item cart[], int *itemCount) {
+    if (*itemCount >= MAX_ITEMS) {
+        printf("Your cart is full. Cannot add more items.\n");
+        return;
+    }
+
+    printf("Enter the name of the item: ");
+    getchar(); // To consume the newline character left by previous input
+    fgets(cart[*itemCount].name, 50, stdin);
+    cart[*itemCount].name[strcspn(cart[*itemCount].name, "\n")] = '\0'; // Remove newline character
+
+    printf("Enter the price of the item: ");
+    scanf("%f", &cart[*itemCount].price);
+
+    printf("Enter the quantity of the item: ");
+    scanf("%d", &cart[*itemCount].quantity);
+
+    (*itemCount)++;
+    printf("Item added to cart successfully!\n");
+}
+
+// Function to remove an item from the cart
+void removeItem(Item cart[], int *itemCount) {
+    if (*itemCount == 0) {
+        printf("Your cart is empty. No item to remove.\n");
+        return;
+    }
+
+    char name[50];
+    printf("Enter the name of the item to remove: ");
+    getchar(); // To consume the newline character
+    fgets(name, 50, stdin);
+    name[strcspn(name, "\n")] = '\0'; // Remove newline character
+
+    int found = 0;
+    for (int i = 0; i < *itemCount; i++) {
+        if (strcmp(cart[i].name, name) == 0) {
+            // Shift all items after the removed item to the left
+            for (int j = i; j < *itemCount - 1; j++) {
+                cart[j] = cart[j + 1];
+            }
+            (*itemCount)--;
+            found = 1;
+            printf("Item '%s' removed from cart successfully!\n", name);
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Item '%s' not found in your cart.\n", name);
+    }
+}
+
+// Function to calculate total bill with tax and discount
+void calculateTotal(Item cart[], int itemCount) {
+    if (itemCount == 0) {
+        printf("Your cart is empty.\n");
+        return;
+    }
+
+    float subtotal = 0;
+    for (int i = 0; i < itemCount; i++) {
+        subtotal += cart[i].price * cart[i].quantity;
+    }
+
+    // Apply discount if subtotal is above $100
+    float discount = (subtotal > 100) ? subtotal * DISCOUNT_RATE : 0;
+
+    // Calculate tax
+    float tax = subtotal * TAX_RATE;
+
+    // Calculate total bill
+    float total = subtotal + tax - discount;
+
+    printf("\nSubtotal: $%.2f\n", subtotal);
+    printf("Discount: $%.2f\n", discount);
+    printf("Tax: $%.2f\n", tax);
+    printf("Total: $%.2f\n", total);
+}
+
+int main() {
+    Item cart[MAX_ITEMS];
+    int itemCount = 0;
+    int choice;
+
+    while (1) {
+        printf("\nOnline Shopping Cart\n");
+        printf("1. View Cart\n");
+        printf("2. Add Item to Cart\n");
+        printf("3. Remove Item from Cart\n");
+        printf("4. Calculate Total Bill\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                viewCart(cart, itemCount);
+                break;
+            case 2:
+                addItem(cart, &itemCount);
+                break;
+            case 3:
+                removeItem(cart, &itemCount);
+                break;
+            case 4:
+                calculateTotal(cart, itemCount);
+                break;
+            case 5:
+                printf("Exiting program...\n");
+                return 0;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
