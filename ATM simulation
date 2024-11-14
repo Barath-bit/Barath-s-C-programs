@@ -1,0 +1,122 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Structure to store account details
+struct Account {
+    int accountNumber;
+    char pin[5];
+    float balance;
+};
+
+// Function to authenticate the user
+int authenticate(struct Account *account) {
+    char enteredPin[5];
+
+    printf("Enter your PIN: ");
+    scanf("%s", enteredPin);
+
+    if (strcmp(account->pin, enteredPin) == 0) {
+        return 1;  // Authentication successful
+    } else {
+        printf("Incorrect PIN! Access Denied.\n");
+        return 0;  // Authentication failed
+    }
+}
+
+// Function for balance inquiry
+void balanceInquiry(struct Account *account) {
+    printf("Your current balance is: $%.2f\n", account->balance);
+}
+
+// Function for cash withdrawal
+void cashWithdrawal(struct Account *account) {
+    float amount;
+    printf("Enter the amount to withdraw: $");
+    scanf("%f", &amount);
+
+    if (amount <= 0) {
+        printf("Invalid amount. Please enter a positive value.\n");
+        return;
+    }
+
+    if (amount > account->balance) {
+        printf("Insufficient balance. Transaction denied.\n");
+    } else {
+        account->balance -= amount;
+        printf("Withdrawal successful. Your new balance is: $%.2f\n", account->balance);
+    }
+}
+
+// Function for money transfer to another account
+void moneyTransfer(struct Account *account) {
+    int targetAccountNumber;
+    float transferAmount;
+
+    printf("Enter the target account number: ");
+    scanf("%d", &targetAccountNumber);
+
+    printf("Enter the amount to transfer: $");
+    scanf("%f", &transferAmount);
+
+    if (transferAmount <= 0) {
+        printf("Invalid amount. Please enter a positive value.\n");
+        return;
+    }
+
+    if (transferAmount > account->balance) {
+        printf("Insufficient balance for transfer. Transaction denied.\n");
+    } else {
+        account->balance -= transferAmount;
+        printf("Successfully transferred $%.2f to account %d. Your new balance is: $%.2f\n", transferAmount, targetAccountNumber, account->balance);
+    }
+}
+
+// Function to display the menu and allow the user to choose an operation
+void displayMenu(struct Account *account) {
+    int choice;
+
+    while (1) {
+        printf("\nATM Menu:\n");
+        printf("1. Balance Inquiry\n");
+        printf("2. Cash Withdrawal\n");
+        printf("3. Money Transfer\n");
+        printf("4. Exit\n");
+        printf("Please choose an option (1-4): ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                balanceInquiry(account);
+                break;
+            case 2:
+                cashWithdrawal(account);
+                break;
+            case 3:
+                moneyTransfer(account);
+                break;
+            case 4:
+                printf("Exiting ATM. Thank you!\n");
+                return;  // Exit the program
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+}
+
+int main() {
+    // Initialize an example account with dummy details
+    struct Account account = {123456, "1234", 1000.0};  // Account number, PIN, balance
+
+    printf("Welcome to the ATM System!\n");
+
+    // Authenticate the user
+    if (authenticate(&account)) {
+        printf("Authentication successful.\n");
+        displayMenu(&account);  // Display the ATM menu and allow the user to perform operations
+    } else {
+        printf("Authentication failed. Exiting...\n");
+    }
+
+    return 0;
+}
