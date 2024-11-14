@@ -1,0 +1,55 @@
+#include <stdio.h>
+
+#define MAX_ASSESSMENTS 10
+
+struct Assessment {
+    float score;
+    float weight;
+};
+
+float calculateFinalGrade(struct Assessment assessments[], int count) {
+    float weightedSum = 0;
+    float totalWeight = 0;
+
+    for (int i = 0; i < count; i++) {
+        weightedSum += assessments[i].score * assessments[i].weight;
+        totalWeight += assessments[i].weight;
+    }
+
+    if (totalWeight != 1.0) {
+        printf("Error: Total weight of assessments must equal 1.0.\n");
+        return -1;
+    }
+
+    return weightedSum * 100;
+}
+
+int main() {
+    struct Assessment assessments[MAX_ASSESSMENTS];
+    int count;
+
+    printf("Enter the number of assessments (max %d): ", MAX_ASSESSMENTS);
+    scanf("%d", &count);
+
+    if (count <= 0 || count > MAX_ASSESSMENTS) {
+        printf("Invalid number of assessments.\n");
+        return 1;
+    }
+
+    for (int i = 0; i < count; i++) {
+        printf("Enter score for assessment %d (as a percentage): ", i + 1);
+        scanf("%f", &assessments[i].score);
+        assessments[i].score /= 100;  // Convert to decimal for weighted calculation
+
+        printf("Enter weight for assessment %d (as a decimal, e.g., 0.2 for 20%%): ", i + 1);
+        scanf("%f", &assessments[i].weight);
+    }
+
+    float finalGrade = calculateFinalGrade(assessments, count);
+
+    if (finalGrade != -1) {
+        printf("The final grade is: %.2f%%\n", finalGrade);
+    }
+
+    return 0;
+}
