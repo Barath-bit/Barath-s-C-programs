@@ -1,0 +1,89 @@
+#include <stdio.h>
+
+#define TRANSACTION_LIMIT 5
+#define TRANSACTION_FEE 2.0
+
+float balance = 0.0;
+int transactionCount = 0;
+
+void deposit(float amount) {
+    if (amount > 0) {
+        balance += amount;
+        printf("Deposited: $%.2f\n", amount);
+        transactionCount++;
+    } else {
+        printf("Invalid deposit amount.\n");
+    }
+}
+
+void withdraw(float amount) {
+    if (amount <= 0) {
+        printf("Invalid withdrawal amount.\n");
+    } else if (amount > balance) {
+        printf("Insufficient funds.\n");
+    } else {
+        balance -= amount;
+        printf("Withdrawn: $%.2f\n", amount);
+        transactionCount++;
+    }
+}
+
+void applyTransactionFee() {
+    if (transactionCount > TRANSACTION_LIMIT) {
+        int extraTransactions = transactionCount - TRANSACTION_LIMIT;
+        float fee = extraTransactions * TRANSACTION_FEE;
+        balance -= fee;
+        printf("Transaction fee applied: $%.2f\n", fee);
+    }
+}
+
+void balanceInquiry() {
+    printf("Current balance: $%.2f\n", balance);
+}
+
+int main() {
+    int choice;
+    float amount;
+
+    printf("Welcome to the Bank Account Management System\n");
+
+    do {
+        printf("\nChoose an option:\n");
+        printf("1. Deposit\n");
+        printf("2. Withdraw\n");
+        printf("3. Balance Inquiry\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter the amount to deposit: $");
+                scanf("%f", &amount);
+                deposit(amount);
+                break;
+            case 2:
+                printf("Enter the amount to withdraw: $");
+                scanf("%f", &amount);
+                withdraw(amount);
+                break;
+            case 3:
+                balanceInquiry();
+                break;
+            case 4:
+                printf("Exiting...\n");
+                applyTransactionFee();
+                printf("Final balance after any transaction fees: $%.2f\n", balance);
+                break;
+            default:
+                printf("Invalid option. Please try again.\n");
+        }
+
+        if (transactionCount > TRANSACTION_LIMIT) {
+            printf("Warning: You have exceeded the free transaction limit. Each additional transaction will incur a $%.2f fee.\n", TRANSACTION_FEE);
+        }
+
+    } while (choice != 4);
+
+    return 0;
+}
