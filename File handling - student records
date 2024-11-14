@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_NAME_LENGTH 50
+
+// Structure to store student data
+typedef struct {
+    char name[MAX_NAME_LENGTH];
+    int rollNumber;
+    float marks;
+} Student;
+
+// Function to read student records from the file
+void readRecords(FILE *file) {
+    Student student;
+    
+    // Check if file is empty or doesn't exist
+    fseek(file, 0, SEEK_SET);
+    while (fread(&student, sizeof(Student), 1, file)) {
+        printf("Name: %s, Roll Number: %d, Marks: %.2f\n", student.name, student.rollNumber, student.marks);
+    }
+}
+
+// Function to add a new student record
+void addRecord(FILE *file) {
+    Student student;
+
+    // Input new student data
+    printf("Enter student name: ");
+    getchar(); // To consume the newline character left by previous input
+    fgets(student.name, MAX_NAME_LENGTH, stdin);
+    student.name[strcspn(student.name, "\n")] = '\0'; // Remove the newline character
+
+    printf("Enter student roll number: ");
+    scanf("%d", &student.rollNumber);
+
+    printf("Enter student marks: ");
+    scanf("%f", &student.marks);
+
+    // Write the new record to the file
+    fseek(file, 0, SEEK_END); // Move the file pointer to the end
+    fwrite(&student, sizeof(Student), 1, file);
+    printf("New record added successfully!\n");
+}
+
+int main() {
+    FILE *file;
+    int choice;
+
+    // Open the file in read/write mode, create if it doesn't exist
+    file = fopen("students.dat", "r+b");
+    if (file == NULL) {
+        file = fopen("students.dat", "w+b"); // Create file if it doesn't exist
+        if (file == NULL) {
+            printf("Error opening file.\n");
+            return 1;
+        }
+    }
+
+    while (1) {
+        printf("\nStudent Record System\n");
+        printf("1. View Student Records\n");
+        printf("2. Add New Student Record\n");
+        printf("3. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("\nStudent Records:\n");
+                readRecords(file);
+                break;
+            case 2:
+                addRecord(file);
+                break;
+            case 3:
+                printf("Exiting program...\n");
+                fclose(file);
+                return 0;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    fclose(file);
+    return 0;
+}
