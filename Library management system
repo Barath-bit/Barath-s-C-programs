@@ -1,0 +1,171 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#define MAX_BOOKS 10
+#define MAX_USERS 5
+#define MAX_TITLE_LENGTH 100
+#define FINE_PER_DAY 1.0  // Fine per day for overdue books
+
+// Structure for Book
+struct Book {
+    char title[MAX_TITLE_LENGTH];
+    int totalCopies;
+    int availableCopies;
+};
+
+// Structure for User
+struct User {
+    char name[100];
+    int borrowedBookIndex;
+    time_t issueDate;
+};
+
+// Function to get the current date
+void getCurrentDate(char *dateStr) {
+    time_t now = time(NULL);
+    struct tm *tm_info = localtime(&now);
+    strftime(dateStr, 20, "%Y-%m-%d", tm_info);
+}
+
+// Function to calculate the fine based on overdue days
+float calculateFine(time_t issueDate) {
+    time_t now = time(NULL);
+    double seconds = difftime(now, issueDate);
+    int days = seconds / (60 * 60 * 24);
+    if (days > 0) {
+        return days * FINE_PER_DAY;
+    }
+    return 0;
+}
+
+// Function to borrow a book
+void borrowBook(struct User *user, struct Book books[], int numBooks) {
+    printf("Enter the title of the book to borrow: ");
+    char title[MAX_TITLE_LENGTH];
+    getchar();  // Clear newline left by previous input
+    fgets(title, MAX_TITLE_LENGTH, stdin);
+    title[strcspn(title, "\n")] = '\0';  // Remove newline character
+
+    // Find the book in the system
+    for (int i = 0; i < numBooks; i++) {
+        if (strcmp(books[i].title, title) == 0) {
+            if (books[i].availableCopies > 0) {
+                // Issue the book
+                books[i].availableCopies--;
+                user->borrowedBookIndex = i;
+                user->issueDate = time(NULL);
+                printf("You have borrowed \"%s\".\n", books[i].title);
+                return;
+            } else {
+                printf("Sorry, no copies of \"%s\" are available.\n", books[i].title);
+                return;
+            }
+        }
+    }
+    printf("Book not found in the library.\n");
+}
+
+// Function to return a book
+void returnBook(struct User *user, struct Book books[], int numBooks) {
+    if (user->borrowedBookIndex == -1) {
+        printf("You have not borrowed any book.\n");
+        return;
+    }
+
+    int bookIndex = user->borrowedBookIndex;
+    float fine = calculateFine(user->issueDate);
+    printf("You are returning \"%s\".\n", books[bookIndex].title);
+    printf("Fine for overdue days: $%.2f\n", fine);
+
+    // Return the book and reset user data
+    books[bookIndex].availableCopies++;
+    user->borrowedBookIndex = -1;
+}
+
+// Function to view the list of books
+void viewBooks(struct Book books[], int numBooks) {
+    printf("Available books:\n");
+    for (int i = 0; i < numBooks; i++) {
+        printf("\"%s\" - Available copies: %d\n", books[i].title, books[i].availableCopies);
+    }
+}
+
+// Main function
+int main() {
+    struct Book books[MAX_BOOKS] = {
+        {"C Programming", 5, 5},
+        {"Data Structures", 3, 3},
+        {"Algorithms", 2, 2},
+        {"Operating Systems", 4, 4},
+        {"Database Management", 6, 6}
+    };
+
+    struct User users[MAX_USERS];
+    for (int i = 0; i < MAX_USERS; i++) {
+        users[i].borrowedBookIndex = -1;  // Initialize with no book borrowed
+    }
+
+    int option, userIndex = -1;
+    char name[100];
+
+    while (1) {
+        printf("\nLibrary Management System\n");
+        printf("1. Login\n");
+        printf("2. View Books\n");
+        printf("3. Borrow Book\n");
+        printf("4. Return Book\n");
+        printf("5. Exit\n");
+        printf("Enter an option: ");
+        scanf("%d", &option);
+
+        switch (option) {
+            case 1:
+                printf("Enter your name: ");
+                getchar();  // Clear newline character
+                fgets(name, sizeof(name), stdin);
+                name[strcspn(name, "\n")] = '\0';  // Remove newline character
+
+                // Check if the user exists, otherwise register
+                for (int i = 0; i < MAX_USERS; i++) {
+                    if (users[i].borrowedBookIndex == -1) {
+                        strcpy(users[i].name, name);
+                        userIndex = i;
+                        printf("Welcome, %s!\n", name);
+                        break;
+                    }
+                }
+                break;
+
+            case 2:
+                viewBooks(books, MAX_BOOKS);
+                break;
+
+            case 3:
+                if (userIndex == -1) {
+                    printf("Please log in first.\n");
+                } else {
+                    borrowBook(&users[userIndex], books, MAX_BOOKS);
+                }
+                break;
+
+            case 4:
+                if (userIndex == -1) {
+                    printf("Please log in first.\n");
+                } else {
+                    returnBook(&users[userIndex], books, MAX_BOOKS);
+                }
+                break;
+
+            case 5:
+                printf("Exiting the system. Goodbye!\n");
+                return 0;
+
+            default:
+                printf("Invalid option. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
