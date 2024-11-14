@@ -1,0 +1,103 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Function to simulate a challenge (random outcome)
+int challenge() {
+    // Random number generation (0 or 1)
+    return rand() % 2;  // 0 for failure, 1 for success
+}
+
+// Function to simulate entering Room 1
+void room1() {
+    int choice;
+    printf("\nYou are in Room 1. There is a locked door in front of you.\n");
+    printf("You can either try to pick the lock (1) or search for a key (2).\n");
+    printf("What will you do? ");
+    scanf("%d", &choice);
+
+    if (choice == 1) {
+        printf("You try to pick the lock... ");
+        if (challenge()) {
+            printf("Success! The door opens and you enter Room 2.\n");
+            room2();
+        } else {
+            printf("Failed to pick the lock. You are stuck in Room 1.\n");
+        }
+    } else if (choice == 2) {
+        printf("You search for a key... ");
+        if (challenge()) {
+            printf("You found a key! The door opens and you enter Room 2.\n");
+            room2();
+        } else {
+            printf("You couldn't find the key. You are stuck in Room 1.\n");
+        }
+    } else {
+        printf("Invalid choice. Try again.\n");
+        room1();
+    }
+}
+
+// Function to simulate entering Room 2
+void room2() {
+    int choice;
+    printf("\nYou are in Room 2. There is a monster in the room!\n");
+    printf("You can either fight the monster (1) or try to escape (2).\n");
+    printf("What will you do? ");
+    scanf("%d", &choice);
+
+    if (choice == 1) {
+        printf("You prepare to fight the monster... ");
+        if (challenge()) {
+            printf("You defeated the monster! You proceed to Room 3.\n");
+            room3();
+        } else {
+            printf("You were defeated by the monster. Game over.\n");
+        }
+    } else if (choice == 2) {
+        printf("You attempt to escape... ");
+        if (challenge()) {
+            printf("You successfully escape and enter Room 3.\n");
+            room3();
+        } else {
+            printf("You failed to escape. The monster caught you. Game over.\n");
+        }
+    } else {
+        printf("Invalid choice. Try again.\n");
+        room2();
+    }
+}
+
+// Function to simulate entering Room 3
+void room3() {
+    int choice;
+    printf("\nYou are in Room 3. There is a treasure chest in front of you.\n");
+    printf("You can either open the chest (1) or leave the room (2).\n");
+    printf("What will you do? ");
+    scanf("%d", &choice);
+
+    if (choice == 1) {
+        printf("You open the chest... ");
+        if (challenge()) {
+            printf("You found the treasure! Congratulations, you win!\n");
+        } else {
+            printf("The chest was empty. You leave the room in disappointment.\n");
+        }
+    } else if (choice == 2) {
+        printf("You leave the room without taking the treasure. Game over.\n");
+    } else {
+        printf("Invalid choice. Try again.\n");
+        room3();
+    }
+}
+
+// Main function to start the game
+int main() {
+    srand(time(NULL));  // Seed the random number generator
+
+    printf("Welcome to the Adventure Game!\n");
+    printf("Your goal is to navigate through the rooms and find the treasure.\n");
+    room1();  // Start the adventure in Room 1
+
+    return 0;
+}
