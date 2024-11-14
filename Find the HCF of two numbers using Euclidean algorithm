@@ -1,0 +1,26 @@
+#include <stdio.h>
+
+int findHCF(int a, int b) {
+    while (b != 0) {
+        int remainder = a % b;
+        a = b;
+        b = remainder;
+    }
+    return a;
+}
+
+int main() {
+    int num1, num2, hcf;
+
+    printf("Enter the first number: ");
+    scanf("%d", &num1);
+
+    printf("Enter the second number: ");
+    scanf("%d", &num2);
+
+    hcf = findHCF(num1, num2);
+
+    printf("HCF of %d and %d is: %d\n", num1, num2, hcf);
+
+    return 0;
+}
